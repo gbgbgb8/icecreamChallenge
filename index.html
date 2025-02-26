@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saly's Soft Serve</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Bubblegum+Sans&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍦</text></svg>">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1 class="animate__animated animate__bounce">🍦 Saly's Soft Serve 🍦</h1>
+        </header>
+
+        <div class="game-stats">
+            <div class="timer">⏱️ Time: <span id="time">0</span>s</div>
+            <div class="coins">🪙 <span id="coins">0</span></div>
+            <div class="level">📊 Level: <span id="level">1</span></div>
+        </div>
+
+        <div class="game-area">
+            <div class="customer-section">
+                <div class="customer">
+                    <div class="customer-emoji">👧</div>
+                    <div class="speech-bubble">
+                        <p id="customer-order">I'd like a cone with chocolate ice cream and sprinkles, please!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workstation">
+                <div class="current-creation" id="current-creation">
+                    <div class="base-item" id="base-display">👋 Start here!</div>
+                </div>
+
+                <div class="ingredients-section">
+                    <div class="section-title">Base</div>
+                    <div class="ingredients" id="base-items">
+                        <div class="ingredient" data-item="cone">🍦</div>
+                        <div class="ingredient" data-item="cup">🥤</div>
+                    </div>
+
+                    <div class="section-title">Flavors</div>
+                    <div class="ingredients" id="flavor-items">
+                        <div class="ingredient" data-item="chocolate">🍫</div>
+                        <div class="ingredient" data-item="strawberry">🍓</div>
+                        <div class="ingredient" data-item="vanilla">🍨</div>
+                        <div class="ingredient locked" data-item="mint" title="Mint Flavor (50 coins)">🔒</div>
+                    </div>
+
+                    <div class="section-title">Toppings</div>
+                    <div class="ingredients" id="topping-items">
+                        <div class="ingredient" data-item="sprinkles">🌈</div>
+                        <div class="ingredient" data-item="chocolate-chips">💩</div>
+                        <div class="ingredient locked" data-item="oreos" title="Oreo Topping (75 coins)">🔒</div>
+                        <div class="ingredient locked" data-item="gummy-worms" title="Gummy Worms (100 coins)">🔒</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button id="serve-button">Serve! 🤲</button>
+                <button id="reset-button">Reset 🔄</button>
+                <button id="finish-button">Finish 🏁</button>
+            </div>
+        </div>
+
+        <div class="shop-section">
+            <button id="shop-button">Shop 🛒</button>
+        </div>
+
+        <div id="shop-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>🛒 Ice Cream Shop</h2>
+                <p>Spend your coins to unlock new items!</p>
+                <div class="shop-items">
+                    <div class="shop-item" data-item="mint" data-cost="50">
+                        <div class="item-emoji">🍃</div>
+                        <div class="item-name">Mint Flavor</div>
+                        <div class="item-cost">50 🪙</div>
+                        <button class="buy-button">Buy</button>
+                    </div>
+                    <div class="shop-item" data-item="oreos" data-cost="75">
+                        <div class="item-emoji">🍪</div>
+                        <div class="item-name">Oreo Topping</div>
+                        <div class="item-cost">75 🪙</div>
+                        <button class="buy-button">Buy</button>
+                    </div>
+                    <div class="shop-item" data-item="gummy-worms" data-cost="100">
+                        <div class="item-emoji">🪱</div>
+                        <div class="item-name">Gummy Worms</div>
+                        <div class="item-cost">100 🪙</div>
+                        <button class="buy-button">Buy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="level-up-modal" class="modal">
+            <div class="modal-content level-up-content">
+                <h2>🎉 Level Up! 🎉</h2>
+                <p>You've reached level <span id="new-level">2</span>!</p>
+                <p>Orders will get more complex, but you'll earn more coins!</p>
+                <button id="continue-button">Continue</button>
+            </div>
+        </div>
+
+        <div id="game-over-modal" class="modal">
+            <div class="modal-content game-over-content">
+                <h2>🏆 Game Complete! 🏆</h2>
+                <p>You played for <span id="final-time">0</span> seconds!</p>
+                <p>You earned <span id="final-coins">0</span> coins!</p>
+                <p>You reached level <span id="final-level">1</span>!</p>
+                <button id="play-again-button">Play Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
