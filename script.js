@@ -16,6 +16,7 @@ const gameState = {
     },
     gameActive: false,
     timerInterval: null,
+    soundEnabled: false, // Sounds muted by default
     customerEmojis: ['👧', '👦', '👩', '👨', '👵', '👴', '🧒', '👶'],
     baseItems: ['cone', 'cup'],
     flavorItems: {
@@ -85,6 +86,7 @@ const serveButton = document.getElementById('serve-button');
 const resetButton = document.getElementById('reset-button');
 const finishButton = document.getElementById('finish-button');
 const shopButton = document.getElementById('shop-button');
+const soundToggleElement = document.getElementById('sound-toggle');
 const shopModal = document.getElementById('shop-modal');
 const levelUpModal = document.getElementById('level-up-modal');
 const gameOverModal = document.getElementById('game-over-modal');
@@ -94,6 +96,24 @@ const finalLevelElement = document.getElementById('final-level');
 const continueButton = document.getElementById('continue-button');
 const playAgainButton = document.getElementById('play-again-button');
 const closeButtons = document.querySelectorAll('.close');
+
+// Play a sound if sound is enabled
+function playSound(soundName) {
+    if (gameState.soundEnabled && gameState.sounds[soundName]) {
+        gameState.sounds[soundName].play();
+    }
+}
+
+// Toggle sound on/off
+function toggleSound() {
+    gameState.soundEnabled = !gameState.soundEnabled;
+    soundToggleElement.textContent = gameState.soundEnabled ? '🔊' : '🔇';
+    
+    // Play a test sound when enabling
+    if (gameState.soundEnabled) {
+        playSound('click');
+    }
+}
 
 // Initialize the game
 function initGame() {
@@ -118,6 +138,7 @@ function initGame() {
     resetButton.addEventListener('click', resetCreation);
     finishButton.addEventListener('click', endGame);
     shopButton.addEventListener('click', openShop);
+    soundToggleElement.addEventListener('click', toggleSound);
     
     closeButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -220,7 +241,7 @@ function endGame() {
     gameOverModal.style.display = 'block';
     
     // Play game over sound
-    gameState.sounds.gameOver.play();
+    playSound('gameOver');
 }
 
 // Generate a new customer order
@@ -314,7 +335,7 @@ function handleIngredientClick(event) {
     }
     
     // Play click sound
-    gameState.sounds.click.play();
+    playSound('click');
     
     // Handle different item types
     switch (itemType) {
@@ -432,7 +453,7 @@ function handleServe() {
         }, 1500);
         
         // Play correct sound
-        gameState.sounds.correct.play();
+        playSound('correct');
         
         // Add correct animation
         currentCreationElement.classList.add('correct-animation');
@@ -455,7 +476,7 @@ function handleServe() {
         }
     } else {
         // Play wrong sound
-        gameState.sounds.wrong.play();
+        playSound('wrong');
         
         // Add wrong animation
         currentCreationElement.classList.add('wrong-animation');
@@ -508,7 +529,7 @@ function levelUp() {
     levelUpModal.style.display = 'block';
     
     // Play level up sound
-    gameState.sounds.levelUp.play();
+    playSound('levelUp');
 }
 
 // Open the shop
@@ -563,7 +584,7 @@ function handlePurchase(event) {
         });
         
         // Play purchase sound
-        gameState.sounds.purchase.play();
+        playSound('purchase');
         
         // Update coins display
         updateUI();
@@ -582,7 +603,7 @@ function handlePurchase(event) {
         }, 500);
         
         // Play wrong sound
-        gameState.sounds.wrong.play();
+        playSound('wrong');
     }
 }
 
