@@ -19,7 +19,31 @@ const gameState = {
     soundEnabled: false, // Sounds muted by default
     streak: 0, // Track correct orders in a row
     orderStartTime: 0, // Track when the current order started
-    customerEmojis: ['👧', '👦', '👩', '👨', '👵', '👴', '🧒', '👶'],
+    difficulty: 'easy', // Default difficulty
+    difficultySettings: {
+        easy: {
+            coinsMultiplier: 1.5,      // More coins per order
+            levelUpCoinsThreshold: 80, // Easier to level up with coins
+            levelUpStreakThreshold: 4, // Easier to level up with streaks
+            maxToppingsMultiplier: 0.7, // Fewer toppings in orders
+            timeBonusThresholds: [8, 15, 20] // More time for bonuses
+        },
+        medium: {
+            coinsMultiplier: 1.0,       // Standard coins
+            levelUpCoinsThreshold: 100, // Standard level up threshold
+            levelUpStreakThreshold: 5,  // Standard streak threshold
+            maxToppingsMultiplier: 1.0, // Standard toppings
+            timeBonusThresholds: [5, 10, 15] // Standard time bonuses
+        },
+        hard: {
+            coinsMultiplier: 0.8,       // Fewer coins per order
+            levelUpCoinsThreshold: 150, // Harder to level up with coins
+            levelUpStreakThreshold: 7,  // Harder to level up with streaks
+            maxToppingsMultiplier: 1.3, // More toppings in orders
+            timeBonusThresholds: [3, 7, 12] // Less time for bonuses
+        }
+    },
+    customerEmojis: ['👧', '👦', '👩', '👨', '👵', '��', '🧒', '👶'],
     baseItems: ['cone', 'cup'],
     flavorItems: {
         basic: ['chocolate', 'strawberry', 'vanilla'],
@@ -121,6 +145,7 @@ const finalLevelElement = document.getElementById('final-level');
 const continueButton = document.getElementById('continue-button');
 const playAgainButton = document.getElementById('play-again-button');
 const closeButtons = document.querySelectorAll('.close');
+const difficultySelector = document.getElementById('difficulty');
 
 // Play a sound if sound is enabled
 function playSound(soundName) {
@@ -189,6 +214,9 @@ function initGame() {
         }
     });
 
+    // Add difficulty change listener
+    difficultySelector.addEventListener('change', changeDifficulty);
+
     // Start the game
     startNewGame();
 }
@@ -231,6 +259,9 @@ function startNewGame() {
     // Start the timer
     gameState.timerInterval = setInterval(updateTimer, 1000);
     
+    // Set difficulty from selector
+    gameState.difficulty = difficultySelector.value;
+    
     // Generate first order
     generateNewOrder();
     
@@ -244,13 +275,7 @@ function updateTimer() {
         gameState.timer++;
         timeElement.textContent = gameState.timer;
         
-        // Level up check based on time played
-        if (gameState.timer % 60 === 0 && gameState.timer > 0) {
-            // Every minute, make the game slightly harder
-            if (gameState.level < 5) { // Cap at level 5
-                levelUp();
-            }
-        }
+        // Removed automatic time-based level up
     }
 }
 
@@ -290,17 +315,18 @@ function calculateOrderComplexity(order) {
 // Calculate time bonus based on how quickly the order was fulfilled
 function calculateTimeBonus(orderStartTime, currentTime) {
     const timeTaken = currentTime - orderStartTime;
+    const thresholds = gameState.difficultySettings[gameState.difficulty].timeBonusThresholds;
     
-    // Fast service (under 5 seconds)
-    if (timeTaken < 5) return 2.0;
+    // Fast service (under first threshold)
+    if (timeTaken < thresholds[0]) return 2.0;
     
-    // Good service (under 10 seconds)
-    if (timeTaken < 10) return 1.5;
+    // Good service (under second threshold)
+    if (timeTaken < thresholds[1]) return 1.5;
     
-    // Average service (under 15 seconds)
-    if (timeTaken < 15) return 1.2;
+    // Average service (under third threshold)
+    if (timeTaken < thresholds[2]) return 1.2;
     
-    // Slow service (15+ seconds)
+    // Slow service (over third threshold)
     return 1.0;
 }
 
@@ -324,8 +350,9 @@ function generateNewOrder() {
         toppings: []
     };
     
-    // Add toppings based on level
-    const maxToppings = Math.min(Math.floor(gameState.level / 2) + 1, 3);
+    // Add toppings based on level and difficulty
+    const difficultyMultiplier = gameState.difficultySettings[gameState.difficulty].maxToppingsMultiplier;
+    const maxToppings = Math.min(Math.floor((gameState.level / 2 + 1) * difficultyMultiplier), 3);
     const numToppings = Math.max(1, Math.floor(Math.random() * maxToppings) + 1);
     
     const availableToppings = [...gameState.toppingItems.basic];
@@ -511,9 +538,10 @@ function handleServe() {
     const isCorrect = checkOrder();
     
     if (isCorrect) {
-        // Calculate base coins based on level and complexity
+        // Calculate base coins based on level, complexity and difficulty
         const complexity = gameState.currentOrder.complexity;
-        const baseCoins = Math.round(10 * gameState.level * complexity);
+        const difficultyMultiplier = gameState.difficultySettings[gameState.difficulty].coinsMultiplier;
+        const baseCoins = Math.round(10 * gameState.level * complexity * difficultyMultiplier);
         
         // Calculate time bonus
         const timeBonus = calculateTimeBonus(gameState.orderStartTime, gameState.timer);
@@ -568,15 +596,11 @@ function handleServe() {
             currentCreationElement.classList.remove('correct-animation');
         }, 500);
         
-        // Check for level up based on coins
-        const shouldLevelUp = (gameState.coins >= gameState.level * 100);
+        // Check for level up based on multiple factors
+        checkForLevelUp();
         
-        if (shouldLevelUp && gameState.level < 5) { // Cap at level 5
-            levelUp();
-        } else {
-            // Generate new order
-            generateNewOrder();
-        }
+        // Generate new order
+        generateNewOrder();
     } else {
         // Reset streak
         const oldStreak = gameState.streak;
@@ -766,6 +790,75 @@ function showFeedbackEmoji(isCorrect) {
     setTimeout(() => {
         feedbackContainer.remove();
     }, 1500);
+}
+
+// New function to check for level up based on multiple factors
+function checkForLevelUp() {
+    // Don't level up past level 5
+    if (gameState.level >= 5) return;
+    
+    // Get difficulty settings
+    const settings = gameState.difficultySettings[gameState.difficulty];
+    
+    // Level up criteria - any of these can trigger a level up:
+    
+    // 1. Coins threshold: Different thresholds for each level and difficulty
+    const coinsThreshold = gameState.level * settings.levelUpCoinsThreshold;
+    
+    // 2. Streak threshold: Higher streaks can trigger level ups, varies by difficulty
+    const streakThreshold = settings.levelUpStreakThreshold;
+    
+    // 3. Items unlocked: Unlocking new items can trigger level ups
+    const unlockedItemsCount = Object.values(gameState.unlockedItems).filter(Boolean).length;
+    const itemsThreshold = Math.floor(gameState.level / 2); // Level 2: 1 item, Level 4: 2 items
+    
+    // Check if any threshold is met
+    if (gameState.coins >= coinsThreshold || 
+        gameState.streak >= streakThreshold || 
+        unlockedItemsCount >= itemsThreshold) {
+        levelUp();
+    }
+}
+
+// Change difficulty
+function changeDifficulty() {
+    // Only allow changing difficulty before the game starts or when restarting
+    if (gameState.timer === 0 || !gameState.gameActive) {
+        gameState.difficulty = difficultySelector.value;
+        
+        // If game is already in progress, restart with new difficulty
+        if (gameState.timer > 0) {
+            startNewGame();
+        }
+        
+        // Show toast notification
+        showToastNotification(`Difficulty set to ${gameState.difficulty.charAt(0).toUpperCase() + gameState.difficulty.slice(1)}!`);
+    } else {
+        // Reset the selector to current difficulty if trying to change mid-game
+        difficultySelector.value = gameState.difficulty;
+        showToastNotification("Can't change difficulty during gameplay!");
+    }
+}
+
+// Show toast notification
+function showToastNotification(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    // Animate in
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+    
+    // Remove after animation
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 500);
+    }, 3000);
 }
 
 // Initialize the game when the page loads

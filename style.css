@@ -45,6 +45,8 @@ h1 {
     margin-bottom: 15px;
     font-size: 1.2rem;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 /* Streak counter animation */
@@ -583,4 +585,55 @@ button:hover:after {
 .timer {
     position: relative;
     transition: background-color 0.3s;
+}
+
+/* Difficulty Selector */
+.difficulty-selector {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.difficulty-selector select {
+    background-color: white;
+    border: 2px solid #ff6b9d;
+    border-radius: 8px;
+    padding: 2px 5px;
+    font-family: 'Bubblegum Sans', cursive;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.difficulty-selector select:hover {
+    background-color: #fff5f8;
+    transform: scale(1.05);
+}
+
+.difficulty-selector select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 107, 157, 0.5);
+}
+
+/* Toast Notifications */
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    z-index: 1000;
+    opacity: 0;
+    transition: transform 0.3s, opacity 0.3s;
+    text-align: center;
+    max-width: 80%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.toast-notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
 }
