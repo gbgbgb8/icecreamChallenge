@@ -48,27 +48,27 @@ const gameState = {
     },
     sounds: {
         correct: new Howl({
-            src: ['https://assets.mixkit.co/sfx/preview/mixkit-game-reward-sound-2069.mp3'],
+            src: ['https://cdn.freesound.org/previews/270/270404_5123851-lq.mp3'],
             volume: 0.5
         }),
         wrong: new Howl({
-            src: ['https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3'],
+            src: ['https://cdn.freesound.org/previews/142/142608_1840739-lq.mp3'],
             volume: 0.5
         }),
         click: new Howl({
-            src: ['https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3'],
+            src: ['https://cdn.freesound.org/previews/522/522640_10058132-lq.mp3'],
             volume: 0.3
         }),
         levelUp: new Howl({
-            src: ['https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3'],
+            src: ['https://cdn.freesound.org/previews/320/320775_5260872-lq.mp3'],
             volume: 0.5
         }),
         purchase: new Howl({
-            src: ['https://assets.mixkit.co/sfx/preview/mixkit-coin-win-notification-1992.mp3'],
+            src: ['https://cdn.freesound.org/previews/352/352661_5858296-lq.mp3'],
             volume: 0.5
         }),
         gameOver: new Howl({
-            src: ['https://assets.mixkit.co/sfx/preview/mixkit-arcade-retro-game-over-213.mp3'],
+            src: ['https://cdn.freesound.org/previews/277/277021_4932087-lq.mp3'],
             volume: 0.5
         })
     }

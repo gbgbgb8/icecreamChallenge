@@ -54,7 +54,7 @@ The game is fully responsive and works great on:
 
 ## 🎵 Sound Credits
 
-Sound effects from Mixkit.co
+Sound effects from Freesound.org
 
 ---
 
