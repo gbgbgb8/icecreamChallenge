@@ -637,3 +637,150 @@ button:hover:after {
     transform: translateX(-50%) translateY(0);
     opacity: 1;
 }
+
+/* Title Screen */
+.title-screen-content {
+    background: linear-gradient(135deg, #ffd1dc, #a6e4ff);
+    max-width: 600px;
+    padding: 30px;
+    text-align: center;
+}
+
+.title-screen-content h2 {
+    font-family: 'Fredoka One', cursive;
+    color: #ff6b9d;
+    text-shadow: 2px 2px 0 #ffde59;
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+}
+
+.title-screen-options {
+    margin: 25px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.title-difficulty-selector h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.difficulty-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.difficulty-button {
+    padding: 12px 25px;
+    font-size: 1.2rem;
+    border-radius: 15px;
+    transition: all 0.3s;
+    background-color: white;
+    color: #333;
+    border: 3px solid transparent;
+}
+
+.difficulty-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.difficulty-button[data-difficulty="easy"] {
+    border-color: #4caf50;
+}
+
+.difficulty-button[data-difficulty="medium"] {
+    border-color: #2196f3;
+}
+
+.difficulty-button[data-difficulty="hard"] {
+    border-color: #f44336;
+}
+
+.difficulty-button.selected {
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.difficulty-button[data-difficulty="easy"].selected {
+    background-color: #4caf50;
+    color: white;
+}
+
+.difficulty-button[data-difficulty="medium"].selected {
+    background-color: #2196f3;
+    color: white;
+}
+
+.difficulty-button[data-difficulty="hard"].selected {
+    background-color: #f44336;
+    color: white;
+}
+
+.difficulty-description {
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 15px;
+    border-radius: 15px;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.difficulty-description h4 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: #ff6b9d;
+}
+
+#start-game-button {
+    font-size: 1.5rem;
+    padding: 15px 40px;
+    background-color: #ff6b9d;
+    color: white;
+    border-radius: 30px;
+    margin-top: 20px;
+    transition: all 0.3s;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+#start-game-button:hover {
+    transform: scale(1.05);
+    background-color: #ff4b8d;
+    box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile Responsiveness for Title Screen */
+@media (max-width: 600px) {
+    .title-screen-content h2 {
+        font-size: 1.8rem;
+    }
+    
+    .difficulty-button {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+    
+    #start-game-button {
+        font-size: 1.3rem;
+        padding: 12px 30px;
+    }
+}
+
+/* Game over buttons */
+.game-over-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+#return-to-title-button {
+    background-color: #a6e4ff;
+    color: #333;
+}
+
+#return-to-title-button:hover {
+    background-color: #7fd4ff;
+}

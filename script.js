@@ -20,6 +20,7 @@ const gameState = {
     streak: 0, // Track correct orders in a row
     orderStartTime: 0, // Track when the current order started
     difficulty: 'easy', // Default difficulty
+    gameStarted: false, // Track if the game has been started from title screen
     difficultySettings: {
         easy: {
             coinsMultiplier: 1.5,      // More coins per order
@@ -43,7 +44,7 @@ const gameState = {
             timeBonusThresholds: [3, 7, 12] // Less time for bonuses
         }
     },
-    customerEmojis: ['👧', '👦', '👩', '👨', '👵', '��', '🧒', '👶'],
+    customerEmojis: ['👧', '👦', '👩', '👨', '👵', '👴', '🧒', '👶'],
     baseItems: ['cone', 'cup'],
     flavorItems: {
         basic: ['chocolate', 'strawberry', 'vanilla'],
@@ -144,8 +145,21 @@ const finalCoinsElement = document.getElementById('final-coins');
 const finalLevelElement = document.getElementById('final-level');
 const continueButton = document.getElementById('continue-button');
 const playAgainButton = document.getElementById('play-again-button');
+const returnToTitleButton = document.getElementById('return-to-title-button');
 const closeButtons = document.querySelectorAll('.close');
 const difficultySelector = document.getElementById('difficulty');
+const titleScreenModal = document.getElementById('title-screen-modal');
+const difficultyButtons = document.querySelectorAll('.difficulty-button');
+const difficultyTitle = document.getElementById('difficulty-title');
+const difficultyDescription = document.getElementById('difficulty-description');
+const startGameButton = document.getElementById('start-game-button');
+
+// Difficulty descriptions
+const difficultyDescriptions = {
+    easy: "More coins per order, easier level-up requirements, simpler orders, and more time for speed bonuses.",
+    medium: "Standard gameplay with balanced rewards and challenges.",
+    hard: "Fewer coins per order, tougher level-up requirements, more complex orders, and stricter time limits for bonuses."
+};
 
 // Play a sound if sound is enabled
 function playSound(soundName) {
@@ -205,7 +219,15 @@ function initGame() {
         generateNewOrder();
     });
 
-    playAgainButton.addEventListener('click', startNewGame);
+    playAgainButton.addEventListener('click', () => {
+        gameOverModal.style.display = 'none';
+        startNewGame();
+    });
+    
+    returnToTitleButton.addEventListener('click', () => {
+        gameOverModal.style.display = 'none';
+        showTitleScreen();
+    });
 
     // Close modal when clicking outside
     window.addEventListener('click', (event) => {
@@ -214,20 +236,80 @@ function initGame() {
         }
     });
 
-    // Add difficulty change listener
+    // Add difficulty change listener for in-game selector
     difficultySelector.addEventListener('change', changeDifficulty);
 
-    // Start the game
-    startNewGame();
+    // Title screen difficulty buttons
+    difficultyButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove selected class from all buttons
+            difficultyButtons.forEach(btn => btn.classList.remove('selected'));
+            
+            // Add selected class to clicked button
+            button.classList.add('selected');
+            
+            // Update difficulty
+            const selectedDifficulty = button.dataset.difficulty;
+            gameState.difficulty = selectedDifficulty;
+            
+            // Update difficulty selector in game UI to match
+            difficultySelector.value = selectedDifficulty;
+            
+            // Update description
+            updateDifficultyDescription(selectedDifficulty);
+        });
+    });
+    
+    // Start game button
+    startGameButton.addEventListener('click', () => {
+        titleScreenModal.style.display = 'none';
+        startNewGame();
+    });
+
+    // Show title screen instead of starting game immediately
+    showTitleScreen();
 }
 
-// Start a new game
-function startNewGame() {
+// Show title screen
+function showTitleScreen() {
     // Reset game state
+    resetGameState();
+    
+    // Select default difficulty button
+    const defaultDifficultyButton = document.querySelector(`.difficulty-button[data-difficulty="${gameState.difficulty}"]`);
+    if (defaultDifficultyButton) {
+        // Remove selected class from all buttons
+        difficultyButtons.forEach(btn => btn.classList.remove('selected'));
+        
+        // Add selected class to default button
+        defaultDifficultyButton.classList.add('selected');
+        
+        // Update description
+        updateDifficultyDescription(gameState.difficulty);
+    }
+    
+    // Show title screen
+    titleScreenModal.style.display = 'block';
+    
+    // Hide any other modals
+    gameOverModal.style.display = 'none';
+    levelUpModal.style.display = 'none';
+    shopModal.style.display = 'none';
+}
+
+// Update difficulty description
+function updateDifficultyDescription(difficulty) {
+    difficultyTitle.textContent = `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Mode`;
+    difficultyDescription.textContent = difficultyDescriptions[difficulty];
+}
+
+// Reset game state
+function resetGameState() {
     gameState.timer = 0;
     gameState.coins = 0;
     gameState.level = 1;
-    gameState.gameActive = true;
+    gameState.gameActive = false;
+    gameState.gameStarted = false;
     gameState.streak = 0;
     gameState.orderStartTime = 0;
     
@@ -254,19 +336,33 @@ function startNewGame() {
     // Clear any existing timer
     if (gameState.timerInterval) {
         clearInterval(gameState.timerInterval);
+        gameState.timerInterval = null;
+    }
+}
+
+// Start a new game
+function startNewGame() {
+    // Set game as active and started
+    gameState.gameActive = true;
+    gameState.gameStarted = true;
+    
+    // Update UI
+    updateUI();
+    
+    // Clear any existing timer
+    if (gameState.timerInterval) {
+        clearInterval(gameState.timerInterval);
     }
     
     // Start the timer
     gameState.timerInterval = setInterval(updateTimer, 1000);
-    
-    // Set difficulty from selector
-    gameState.difficulty = difficultySelector.value;
     
     // Generate first order
     generateNewOrder();
     
     // Hide modals
     gameOverModal.style.display = 'none';
+    titleScreenModal.style.display = 'none';
 }
 
 // Update the timer
@@ -279,7 +375,7 @@ function updateTimer() {
     }
 }
 
-// End the game - now triggered by player choice or when reaching max level
+// End the game
 function endGame() {
     gameState.gameActive = false;
     clearInterval(gameState.timerInterval);
@@ -820,14 +916,14 @@ function checkForLevelUp() {
     }
 }
 
-// Change difficulty
+// Change difficulty - now only used for in-game changes
 function changeDifficulty() {
     // Only allow changing difficulty before the game starts or when restarting
-    if (gameState.timer === 0 || !gameState.gameActive) {
+    if (!gameState.gameStarted || !gameState.gameActive) {
         gameState.difficulty = difficultySelector.value;
         
-        // If game is already in progress, restart with new difficulty
-        if (gameState.timer > 0) {
+        // If game has been started but is not active, restart with new difficulty
+        if (gameState.gameStarted && !gameState.gameActive) {
             startNewGame();
         }
         
@@ -836,7 +932,7 @@ function changeDifficulty() {
     } else {
         // Reset the selector to current difficulty if trying to change mid-game
         difficultySelector.value = gameState.difficulty;
-        showToastNotification("Can't change difficulty during gameplay!");
+        showToastNotification("Can't change difficulty during gameplay! Finish your game first.");
     }
 }
 

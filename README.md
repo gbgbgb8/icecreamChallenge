@@ -4,17 +4,18 @@ A fun, mobile-friendly ice cream shop game where players create delicious ice cr
 
 ## 🎮 How to Play
 
-1. **Serve Customers**: Read the customer's order in the speech bubble and create their ice cream by selecting the correct base, flavor, and toppings.
-2. **Earn Coins**: Complete orders correctly to earn coins! The more complex the order, the more coins you'll earn.
-3. **Build a Streak**: Serve orders correctly in a row to build a streak and earn bonus coins with fun ice cream-themed messages!
-4. **Speed Bonuses**: Serve customers quickly to earn speed bonuses - the faster you serve, the bigger the tip!
-5. **Choose Your Difficulty**: Select Easy, Medium, or Hard difficulty to customize your experience.
+1. **Choose Your Difficulty**: On the title screen, select Easy, Medium, or Hard difficulty to customize your experience before starting.
+2. **Serve Customers**: Read the customer's order in the speech bubble and create their ice cream by selecting the correct base, flavor, and toppings.
+3. **Earn Coins**: Complete orders correctly to earn coins! The more complex the order, the more coins you'll earn.
+4. **Build a Streak**: Serve orders correctly in a row to build a streak and earn bonus coins with fun ice cream-themed messages!
+5. **Speed Bonuses**: Serve customers quickly to earn speed bonuses - the faster you serve, the bigger the tip!
 6. **Level Up**: Level up by earning coins, building streaks, or unlocking new items. Higher levels bring more complex orders but also more rewards!
 7. **Unlock Items**: Spend your coins in the shop to unlock new flavors and toppings.
 8. **Finish When Ready**: When you're done playing, click the "Finish" button to see your final stats!
 
 ## 🍨 Game Features
 
+- **Title Screen**: Start the game by selecting your preferred difficulty level.
 - **Simple Controls**: Just tap or click on ingredients to add them to your creation.
 - **Progressive Difficulty**: Orders become more complex as you level up.
 - **Shop System**: Unlock new ice cream flavors and toppings with coins you earn.
@@ -47,7 +48,8 @@ The game is built using:
 
 1. Clone this repository
 2. Open `index.html` in your browser
-3. Start serving ice cream!
+3. Select your difficulty on the title screen
+4. Start serving ice cream!
 
 No build process or dependencies to install - just pure web goodness!
 

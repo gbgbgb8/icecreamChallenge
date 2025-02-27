@@ -31,6 +31,32 @@
             <div class="sound-toggle" id="sound-toggle">🔇</div>
         </div>
 
+        <!-- Title Screen Modal -->
+        <div id="title-screen-modal" class="modal">
+            <div class="modal-content title-screen-content">
+                <h2 class="animate__animated animate__bounce">🍦 Welcome to Saly's Soft Serve! 🍦</h2>
+                <p>Serve delicious ice cream to happy customers!</p>
+                
+                <div class="title-screen-options">
+                    <div class="title-difficulty-selector">
+                        <h3>Select Difficulty:</h3>
+                        <div class="difficulty-buttons">
+                            <button class="difficulty-button" data-difficulty="easy">Easy</button>
+                            <button class="difficulty-button" data-difficulty="medium">Medium</button>
+                            <button class="difficulty-button" data-difficulty="hard">Hard</button>
+                        </div>
+                    </div>
+                    
+                    <div class="difficulty-description">
+                        <h4 id="difficulty-title">Easy Mode</h4>
+                        <p id="difficulty-description">More coins per order, easier level-up requirements, simpler orders, and more time for speed bonuses.</p>
+                    </div>
+                </div>
+                
+                <button id="start-game-button" class="animate__animated animate__pulse animate__infinite">Start Game!</button>
+            </div>
+        </div>
+        
         <div class="game-area">
             <div class="customer-section">
                 <div class="customer">
@@ -125,7 +151,10 @@
                 <p>You played for <span id="final-time">0</span> seconds!</p>
                 <p>You earned <span id="final-coins">0</span> coins!</p>
                 <p>You reached level <span id="final-level">1</span>!</p>
-                <button id="play-again-button">Play Again</button>
+                <div class="game-over-buttons">
+                    <button id="play-again-button">Play Again</button>
+                    <button id="return-to-title-button">Return to Title</button>
+                </div>
             </div>
         </div>
     </div>
