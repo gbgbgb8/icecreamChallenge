@@ -47,6 +47,17 @@ h1 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Streak counter animation */
+.streak {
+    transition: transform 0.3s, color 0.3s;
+}
+
+.streak[data-active="true"] {
+    color: #ff6b9d;
+    transform: scale(1.1);
+    text-shadow: 0 0 5px rgba(255, 107, 157, 0.5);
+}
+
 /* Sound Toggle */
 .sound-toggle {
     cursor: pointer;
@@ -448,6 +459,26 @@ button:hover:after {
     animation: floatUp 1.5s forwards;
     text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     pointer-events: none;
+    text-align: center;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+/* Streak broken notification */
+.streak-broken {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ff6b6b;
+    font-weight: bold;
+    font-size: 1.2rem;
+    animation: shake 0.5s, floatUp 1.5s forwards;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    pointer-events: none;
+    text-align: center;
+    line-height: 1.4;
+    white-space: nowrap;
 }
 
 @keyframes floatUp {

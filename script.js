@@ -17,6 +17,8 @@ const gameState = {
     gameActive: false,
     timerInterval: null,
     soundEnabled: false, // Sounds muted by default
+    streak: 0, // Track correct orders in a row
+    orderStartTime: 0, // Track when the current order started
     customerEmojis: ['👧', '👦', '👩', '👨', '👵', '👴', '🧒', '👶'],
     baseItems: ['cone', 'cup'],
     flavorItems: {
@@ -46,6 +48,25 @@ const gameState = {
         correct: ['🎉', '🥳', '⭐', '✨', '👏', '🎊'],
         wrong: ['💥', '💦', '🤦', '😵', '🙊', '😬']
     },
+    streakMessages: [
+        "🍨 Sweet Start!",
+        "🍦 Vanilla Victory!",
+        "🍫 Hot Fudge!",
+        "🍓 Berry Blast!",
+        "🍌 Going Bananas!",
+        "🧁 Sugar Rush!",
+        "🍪 Cookie Craze!",
+        "🍭 Candy Crush!",
+        "🍧 Brain Freeze!",
+        "🔥 On Fire!"
+    ],
+    failMessages: [
+        "Awe Fudge!",
+        "Melting Down!",
+        "Sprinkle Spill!",
+        "Dropped Scoop!",
+        "Sticky Situation!"
+    ],
     sounds: {
         correct: new Howl({
             src: ['https://cdn.freesound.org/previews/270/270404_5123851-lq.mp3'],
@@ -69,6 +90,10 @@ const gameState = {
         }),
         gameOver: new Howl({
             src: ['https://cdn.freesound.org/previews/277/277021_4932087-lq.mp3'],
+            volume: 0.5
+        }),
+        streak: new Howl({
+            src: ['https://cdn.freesound.org/previews/339/339912_5121074-lq.mp3'],
             volume: 0.5
         })
     }
@@ -175,6 +200,8 @@ function startNewGame() {
     gameState.coins = 0;
     gameState.level = 1;
     gameState.gameActive = true;
+    gameState.streak = 0;
+    gameState.orderStartTime = 0;
     
     // Reset unlocked items
     gameState.unlockedItems = {
@@ -244,6 +271,51 @@ function endGame() {
     playSound('gameOver');
 }
 
+// Calculate order complexity
+function calculateOrderComplexity(order) {
+    // Base complexity: 1 for base + flavor
+    let complexity = 1;
+    
+    // Add complexity for each topping
+    complexity += order.toppings.length * 0.5;
+    
+    // Add complexity for special items
+    if (order.flavor === 'mint') complexity += 0.5;
+    if (order.toppings.includes('oreos')) complexity += 0.5;
+    if (order.toppings.includes('gummy-worms')) complexity += 0.5;
+    
+    return Math.max(1, Math.min(5, complexity)); // Clamp between 1-5
+}
+
+// Calculate time bonus based on how quickly the order was fulfilled
+function calculateTimeBonus(orderStartTime, currentTime) {
+    const timeTaken = currentTime - orderStartTime;
+    
+    // Fast service (under 5 seconds)
+    if (timeTaken < 5) return 2.0;
+    
+    // Good service (under 10 seconds)
+    if (timeTaken < 10) return 1.5;
+    
+    // Average service (under 15 seconds)
+    if (timeTaken < 15) return 1.2;
+    
+    // Slow service (15+ seconds)
+    return 1.0;
+}
+
+// Get streak message
+function getStreakMessage(streak, isSuccess) {
+    if (!isSuccess) {
+        // Return a random fail message
+        return gameState.failMessages[Math.floor(Math.random() * gameState.failMessages.length)];
+    }
+    
+    // Cap the streak index to the max available messages
+    const messageIndex = Math.min(streak, gameState.streakMessages.length - 1);
+    return gameState.streakMessages[messageIndex];
+}
+
 // Generate a new customer order
 function generateNewOrder() {
     const order = {
@@ -275,6 +347,12 @@ function generateNewOrder() {
     }
     
     gameState.currentOrder = order;
+    
+    // Calculate and store the complexity
+    gameState.currentOrder.complexity = calculateOrderComplexity(order);
+    
+    // Record the start time for this order
+    gameState.orderStartTime = gameState.timer;
     
     // Update customer emoji
     const randomEmoji = getRandomItem(gameState.customerEmojis);
@@ -433,18 +511,38 @@ function handleServe() {
     const isCorrect = checkOrder();
     
     if (isCorrect) {
-        // Calculate coins based on level and complexity
-        const baseCoins = 10 * gameState.level;
-        const toppingBonus = gameState.currentOrder.toppings.length * 5;
-        const earnedCoins = baseCoins + toppingBonus;
+        // Calculate base coins based on level and complexity
+        const complexity = gameState.currentOrder.complexity;
+        const baseCoins = Math.round(10 * gameState.level * complexity);
+        
+        // Calculate time bonus
+        const timeBonus = calculateTimeBonus(gameState.orderStartTime, gameState.timer);
+        
+        // Calculate streak bonus (starts at 1.0, increases by 0.1 for each streak up to 2.0)
+        const streakBonus = Math.min(2.0, 1.0 + (gameState.streak * 0.1));
+        
+        // Calculate total coins with all bonuses
+        const earnedCoins = Math.round(baseCoins * timeBonus * streakBonus);
+        
+        // Increment streak
+        gameState.streak++;
         
         // Add coins
         gameState.coins += earnedCoins;
         
-        // Show coin animation
+        // Get streak message
+        const streakMessage = getStreakMessage(gameState.streak - 1, true);
+        
+        // Show coin animation with streak message
         const coinAnimation = document.createElement('div');
         coinAnimation.className = 'coin-animation';
-        coinAnimation.textContent = `+${earnedCoins} 🪙`;
+        
+        // Show different text based on bonuses
+        let bonusText = '';
+        if (timeBonus > 1.0) bonusText += ' ⚡ Speed Bonus!';
+        if (streakBonus > 1.0) bonusText += ` 🔥 x${gameState.streak} Streak!`;
+        
+        coinAnimation.innerHTML = `+${earnedCoins} 🪙<br>${streakMessage}${bonusText}`;
         document.querySelector('.coins').appendChild(coinAnimation);
         
         // Remove animation after it completes
@@ -454,6 +552,11 @@ function handleServe() {
         
         // Play correct sound
         playSound('correct');
+        
+        // Play streak sound if streak is 3 or higher
+        if (gameState.streak >= 3) {
+            playSound('streak');
+        }
         
         // Add correct animation
         currentCreationElement.classList.add('correct-animation');
@@ -475,6 +578,26 @@ function handleServe() {
             generateNewOrder();
         }
     } else {
+        // Reset streak
+        const oldStreak = gameState.streak;
+        gameState.streak = 0;
+        
+        // Get fail message
+        const failMessage = getStreakMessage(0, false);
+        
+        // Show streak broken message if had a streak
+        if (oldStreak >= 2) {
+            const streakBroken = document.createElement('div');
+            streakBroken.className = 'streak-broken';
+            streakBroken.innerHTML = `${failMessage}<br>Streak Broken!`;
+            document.querySelector('.coins').appendChild(streakBroken);
+            
+            // Remove animation after it completes
+            setTimeout(() => {
+                streakBroken.remove();
+            }, 1500);
+        }
+        
         // Play wrong sound
         playSound('wrong');
         
@@ -612,6 +735,19 @@ function updateUI() {
     timeElement.textContent = gameState.timer;
     coinsElement.textContent = gameState.coins;
     levelElement.textContent = gameState.level;
+    
+    // Update streak indicator
+    const streakElement = document.querySelector('.streak');
+    if (streakElement) {
+        document.getElementById('streak-counter').textContent = gameState.streak;
+        
+        // Highlight streak when active
+        if (gameState.streak >= 2) {
+            streakElement.setAttribute('data-active', 'true');
+        } else {
+            streakElement.removeAttribute('data-active');
+        }
+    }
 }
 
 // Show feedback emoji for correct/incorrect orders
