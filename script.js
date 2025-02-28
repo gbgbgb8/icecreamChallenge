@@ -124,66 +124,35 @@ const gameState = {
     }
 };
 
-// DOM Cache for frequently accessed elements
-const DOM = {
-    // Game stats
-    time: document.getElementById('time'),
-    coins: document.getElementById('coins'),
-    level: document.getElementById('level'),
-    streakCounter: document.getElementById('streak-counter'),
-    streakElement: document.querySelector('.streak'),
-    
-    // Game elements
-    customerOrder: document.getElementById('customer-order'),
-    customerEmoji: document.querySelector('.customer-emoji'),
-    currentCreation: document.getElementById('current-creation'),
-    baseDisplay: document.getElementById('base-display'),
-    
-    // Buttons
-    serveButton: document.getElementById('serve-button'),
-    resetButton: document.getElementById('reset-button'),
-    finishButton: document.getElementById('finish-button'),
-    shopButton: document.getElementById('shop-button'),
-    soundToggle: document.getElementById('sound-toggle'),
-    
-    // Modals
-    shopModal: document.getElementById('shop-modal'),
-    levelUpModal: document.getElementById('level-up-modal'),
-    gameOverModal: document.getElementById('game-over-modal'),
-    howToPlayModal: document.getElementById('how-to-play-modal'),
-    titleScreenModal: document.getElementById('title-screen-modal'),
-    
-    // Modal elements
-    newLevel: document.getElementById('new-level'),
-    finalCoins: document.getElementById('final-coins'),
-    finalLevel: document.getElementById('final-level'),
-    finalTime: document.getElementById('final-time'),
-    
-    // Buttons
-    continueButton: document.getElementById('continue-button'),
-    playAgainButton: document.getElementById('play-again-button'),
-    returnToTitleButton: document.getElementById('return-to-title-button'),
-    closeButtons: document.querySelectorAll('.close'),
-    
-    // Difficulty
-    difficultySelector: document.getElementById('difficulty'),
-    difficultyButtons: document.querySelectorAll('.difficulty-button'),
-    difficultyTitle: document.getElementById('difficulty-title'),
-    difficultyDescription: document.getElementById('difficulty-description'),
-    
-    // Title screen
-    startGameButton: document.getElementById('start-game-button'),
-    howToPlayButton: document.getElementById('how-to-play-button'),
-    closeHowToPlayButton: document.getElementById('close-how-to-play-button'),
-    resetProgressButton: document.getElementById('reset-progress-button'),
-    
-    // Other
-    feedbackContainer: document.getElementById('feedback-container'),
-    coinsDisplay: document.querySelector('.coins'),
-    
-    // Toast notification (will be created when needed)
-    toast: null
-};
+// DOM Elements
+const timeElement = document.getElementById('time');
+const coinsElement = document.getElementById('coins');
+const levelElement = document.getElementById('level');
+const customerOrderElement = document.getElementById('customer-order');
+const customerEmojiElement = document.querySelector('.customer-emoji');
+const currentCreationElement = document.getElementById('current-creation');
+const baseDisplayElement = document.getElementById('base-display');
+const serveButton = document.getElementById('serve-button');
+const resetButton = document.getElementById('reset-button');
+const finishButton = document.getElementById('finish-button');
+const shopButton = document.getElementById('shop-button');
+const soundToggleElement = document.getElementById('sound-toggle');
+const shopModal = document.getElementById('shop-modal');
+const levelUpModal = document.getElementById('level-up-modal');
+const gameOverModal = document.getElementById('game-over-modal');
+const newLevelElement = document.getElementById('new-level');
+const finalCoinsElement = document.getElementById('final-coins');
+const finalLevelElement = document.getElementById('final-level');
+const continueButton = document.getElementById('continue-button');
+const playAgainButton = document.getElementById('play-again-button');
+const returnToTitleButton = document.getElementById('return-to-title-button');
+const closeButtons = document.querySelectorAll('.close');
+const difficultySelector = document.getElementById('difficulty');
+const titleScreenModal = document.getElementById('title-screen-modal');
+const difficultyButtons = document.querySelectorAll('.difficulty-button');
+const difficultyTitle = document.getElementById('difficulty-title');
+const difficultyDescription = document.getElementById('difficulty-description');
+const startGameButton = document.getElementById('start-game-button');
 
 // Difficulty descriptions
 const difficultyDescriptions = {
@@ -195,23 +164,14 @@ const difficultyDescriptions = {
 // Play a sound if sound is enabled
 function playSound(soundName) {
     if (gameState.soundEnabled && gameState.sounds[soundName]) {
-        try {
-            // Add error handling for sound loading
-            gameState.sounds[soundName].once('loaderror', () => {
-                console.log(`Failed to load sound: ${soundName}`);
-            });
-            
-            gameState.sounds[soundName].play();
-        } catch (error) {
-            console.error(`Error playing sound ${soundName}:`, error);
-        }
+        gameState.sounds[soundName].play();
     }
 }
 
 // Toggle sound on/off
 function toggleSound() {
     gameState.soundEnabled = !gameState.soundEnabled;
-    DOM.soundToggle.textContent = gameState.soundEnabled ? '🔊' : '🔇';
+    soundToggleElement.textContent = gameState.soundEnabled ? '🔊' : '🔇';
     
     // Play a test sound when enabling
     if (gameState.soundEnabled) {
@@ -225,23 +185,11 @@ function initGame() {
     document.querySelectorAll('.ingredient').forEach(item => {
         item.addEventListener('click', handleIngredientClick);
         
-        // Add tabindex for keyboard accessibility
-        item.setAttribute('tabindex', '0');
-        
-        // Add keyboard event listener for accessibility
-        item.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault(); // Prevent scrolling on space
-                handleIngredientClick(e);
-            }
-        });
-        
         // Make sure locked items show the correct emoji when unlocked
         if (item.classList.contains('locked')) {
             const itemName = item.dataset.item;
             // Store the correct emoji as a data attribute for later use
-            const emojiElement = item.querySelector('.ingredient-emoji');
-            emojiElement.dataset.unlockedEmoji = gameState.emojiMap[itemName];
+            item.dataset.unlockedEmoji = gameState.emojiMap[itemName];
             
             // Add tooltip text showing what the item is
             const itemType = itemName === 'mint' ? 'Flavor' : 'Topping';
@@ -250,16 +198,15 @@ function initGame() {
         }
     });
 
-    DOM.serveButton.addEventListener('click', handleServe);
-    DOM.resetButton.addEventListener('click', resetCreation);
-    DOM.finishButton.addEventListener('click', endGame);
-    DOM.shopButton.addEventListener('click', openShop);
-    DOM.soundToggle.addEventListener('click', toggleSound);
+    serveButton.addEventListener('click', handleServe);
+    resetButton.addEventListener('click', resetCreation);
+    finishButton.addEventListener('click', endGame);
+    shopButton.addEventListener('click', openShop);
+    soundToggleElement.addEventListener('click', toggleSound);
     
-    DOM.closeButtons.forEach(button => {
+    closeButtons.forEach(button => {
         button.addEventListener('click', () => {
-            DOM.shopModal.style.display = 'none';
-            DOM.howToPlayModal.style.display = 'none';
+            shopModal.style.display = 'none';
         });
     });
 
@@ -267,74 +214,36 @@ function initGame() {
         button.addEventListener('click', handlePurchase);
     });
 
-    DOM.continueButton.addEventListener('click', () => {
-        DOM.levelUpModal.style.display = 'none';
+    continueButton.addEventListener('click', () => {
+        levelUpModal.style.display = 'none';
         generateNewOrder();
     });
 
-    DOM.playAgainButton.addEventListener('click', () => {
-        DOM.gameOverModal.style.display = 'none';
+    playAgainButton.addEventListener('click', () => {
+        gameOverModal.style.display = 'none';
         startNewGame();
     });
     
-    DOM.returnToTitleButton.addEventListener('click', () => {
-        DOM.gameOverModal.style.display = 'none';
+    returnToTitleButton.addEventListener('click', () => {
+        gameOverModal.style.display = 'none';
         showTitleScreen();
-    });
-
-    // How to Play button
-    DOM.howToPlayButton.addEventListener('click', () => {
-        DOM.howToPlayModal.style.display = 'block';
-    });
-    
-    DOM.closeHowToPlayButton.addEventListener('click', () => {
-        DOM.howToPlayModal.style.display = 'none';
-    });
-    
-    // Reset Progress button
-    DOM.resetProgressButton.addEventListener('click', () => {
-        if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
-            clearSavedGame();
-            resetGameState();
-            showToastNotification('Progress reset successfully!');
-            
-            // Update difficulty to default
-            gameState.difficulty = 'easy';
-            DOM.difficultySelector.value = 'easy';
-            
-            // Update selected difficulty button
-            DOM.difficultyButtons.forEach(btn => btn.classList.remove('selected'));
-            const defaultButton = document.querySelector('.difficulty-button[data-difficulty="easy"]');
-            if (defaultButton) {
-                defaultButton.classList.add('selected');
-            }
-            
-            // Update difficulty description
-            updateDifficultyDescription('easy');
-            
-            // Update UI
-            updateUI();
-        }
     });
 
     // Close modal when clicking outside
     window.addEventListener('click', (event) => {
-        if (event.target === DOM.shopModal) {
-            DOM.shopModal.style.display = 'none';
-        }
-        if (event.target === DOM.howToPlayModal) {
-            DOM.howToPlayModal.style.display = 'none';
+        if (event.target === shopModal) {
+            shopModal.style.display = 'none';
         }
     });
 
     // Add difficulty change listener for in-game selector
-    DOM.difficultySelector.addEventListener('change', changeDifficulty);
+    difficultySelector.addEventListener('change', changeDifficulty);
 
     // Title screen difficulty buttons
-    DOM.difficultyButtons.forEach(button => {
+    difficultyButtons.forEach(button => {
         button.addEventListener('click', () => {
             // Remove selected class from all buttons
-            DOM.difficultyButtons.forEach(btn => btn.classList.remove('selected'));
+            difficultyButtons.forEach(btn => btn.classList.remove('selected'));
             
             // Add selected class to clicked button
             button.classList.add('selected');
@@ -344,7 +253,7 @@ function initGame() {
             gameState.difficulty = selectedDifficulty;
             
             // Update difficulty selector in game UI to match
-            DOM.difficultySelector.value = selectedDifficulty;
+            difficultySelector.value = selectedDifficulty;
             
             // Update description
             updateDifficultyDescription(selectedDifficulty);
@@ -352,8 +261,8 @@ function initGame() {
     });
     
     // Start game button
-    DOM.startGameButton.addEventListener('click', () => {
-        DOM.titleScreenModal.style.display = 'none';
+    startGameButton.addEventListener('click', () => {
+        titleScreenModal.style.display = 'none';
         startNewGame();
     });
 
@@ -366,14 +275,11 @@ function showTitleScreen() {
     // Reset game state
     resetGameState();
     
-    // Try to load saved game
-    loadGame();
-    
     // Select default difficulty button
     const defaultDifficultyButton = document.querySelector(`.difficulty-button[data-difficulty="${gameState.difficulty}"]`);
     if (defaultDifficultyButton) {
         // Remove selected class from all buttons
-        DOM.difficultyButtons.forEach(btn => btn.classList.remove('selected'));
+        difficultyButtons.forEach(btn => btn.classList.remove('selected'));
         
         // Add selected class to default button
         defaultDifficultyButton.classList.add('selected');
@@ -383,18 +289,18 @@ function showTitleScreen() {
     }
     
     // Show title screen
-    DOM.titleScreenModal.style.display = 'block';
+    titleScreenModal.style.display = 'block';
     
     // Hide any other modals
-    DOM.gameOverModal.style.display = 'none';
-    DOM.levelUpModal.style.display = 'none';
-    DOM.shopModal.style.display = 'none';
+    gameOverModal.style.display = 'none';
+    levelUpModal.style.display = 'none';
+    shopModal.style.display = 'none';
 }
 
 // Update difficulty description
 function updateDifficultyDescription(difficulty) {
-    DOM.difficultyTitle.textContent = `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Mode`;
-    DOM.difficultyDescription.textContent = difficultyDescriptions[difficulty];
+    difficultyTitle.textContent = `${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Mode`;
+    difficultyDescription.textContent = difficultyDescriptions[difficulty];
 }
 
 // Reset game state
@@ -420,10 +326,7 @@ function resetGameState() {
         if (gameState.flavorItems.unlockable.includes(itemName) || 
             gameState.toppingItems.unlockable.includes(itemName)) {
             item.classList.add('locked');
-            const emojiElement = item.querySelector('.ingredient-emoji');
-            if (emojiElement) {
-                emojiElement.textContent = '🔒';
-            }
+            item.textContent = '🔒';
         }
     });
     
@@ -458,15 +361,15 @@ function startNewGame() {
     generateNewOrder();
     
     // Hide modals
-    DOM.gameOverModal.style.display = 'none';
-    DOM.titleScreenModal.style.display = 'none';
+    gameOverModal.style.display = 'none';
+    titleScreenModal.style.display = 'none';
 }
 
 // Update the timer
 function updateTimer() {
     if (gameState.gameActive) {
         gameState.timer++;
-        DOM.time.textContent = gameState.timer;
+        timeElement.textContent = gameState.timer;
         
         // Removed automatic time-based level up
     }
@@ -474,24 +377,16 @@ function updateTimer() {
 
 // End the game
 function endGame() {
-    // Ask for confirmation before ending the game
-    if (!confirm('Are you sure you want to finish the game? Your progress will be saved.')) {
-        return;
-    }
-    
     gameState.gameActive = false;
     clearInterval(gameState.timerInterval);
     
-    // Save game progress
-    saveGame();
-    
     // Update final stats
-    DOM.finalTime.textContent = gameState.timer;
-    DOM.finalCoins.textContent = gameState.coins;
-    DOM.finalLevel.textContent = gameState.level;
+    document.getElementById('final-time').textContent = gameState.timer;
+    finalCoinsElement.textContent = gameState.coins;
+    finalLevelElement.textContent = gameState.level;
     
     // Show game over modal
-    DOM.gameOverModal.style.display = 'block';
+    gameOverModal.style.display = 'block';
     
     // Play game over sound
     playSound('gameOver');
@@ -584,10 +479,10 @@ function generateNewOrder() {
     
     // Update customer emoji
     const randomEmoji = getRandomItem(gameState.customerEmojis);
-    DOM.customerEmoji.textContent = randomEmoji;
+    customerEmojiElement.textContent = randomEmoji;
     
     // Update order text
-    DOM.customerOrder.textContent = generateOrderText(order);
+    customerOrderElement.textContent = generateOrderText(order);
     
     // Reset current creation
     resetCreation();
@@ -637,7 +532,6 @@ function handleIngredientClick(event) {
     
     // Check if item is locked
     if (ingredient.classList.contains('locked')) {
-        event.stopPropagation(); // Stop event propagation for locked items
         return;
     }
     
@@ -666,44 +560,59 @@ function handleIngredientClick(event) {
 
 // Update the creation display
 function updateCreationDisplay() {
-    // Build HTML string first to reduce DOM operations
-    let html = '';
+    // Clear the display
+    currentCreationElement.innerHTML = '';
+    
+    // Create a container for the creation
+    const creationContainer = document.createElement('div');
+    creationContainer.className = 'creation-container';
     
     // If nothing selected, show prompt
     if (!gameState.currentCreation.base && !gameState.currentCreation.flavor && gameState.currentCreation.toppings.length === 0) {
-        html = '<div class="base-item" id="base-display">👋 Start here!</div>';
-    } else {
-        html = '<div class="creation-container">';
-        
-        // Add base if selected
-        if (gameState.currentCreation.base) {
-            const baseEmoji = gameState.emojiMap[gameState.currentCreation.base];
-            html += `<div class="creation-item" data-item="${gameState.currentCreation.base}" aria-label="${gameState.currentCreation.base}">${baseEmoji}</div>`;
-        }
-        
-        // Add flavor if selected
-        if (gameState.currentCreation.flavor) {
-            if (gameState.currentCreation.base) {
-                html += '<div class="creation-plus">+</div>';
-            }
-            const flavorEmoji = gameState.emojiMap[gameState.currentCreation.flavor];
-            html += `<div class="creation-item" data-item="${gameState.currentCreation.flavor}" aria-label="${gameState.currentCreation.flavor}">${flavorEmoji}</div>`;
-        }
-        
-        // Add toppings if any
-        gameState.currentCreation.toppings.forEach(topping => {
-            if (gameState.currentCreation.base || gameState.currentCreation.flavor) {
-                html += '<div class="creation-plus">+</div>';
-            }
-            const toppingEmoji = gameState.emojiMap[topping];
-            html += `<div class="creation-item" data-item="${topping}" aria-label="${topping}">${toppingEmoji}</div>`;
-        });
-        
-        html += '</div>';
+        const promptElement = document.createElement('div');
+        promptElement.className = 'base-item';
+        promptElement.textContent = '👋 Start here!';
+        currentCreationElement.appendChild(promptElement);
+        return;
     }
     
-    // Set innerHTML once to reduce reflows
-    DOM.currentCreation.innerHTML = html;
+    // Add base if selected
+    if (gameState.currentCreation.base) {
+        const baseElement = document.createElement('div');
+        baseElement.className = 'creation-item';
+        baseElement.textContent = gameState.emojiMap[gameState.currentCreation.base];
+        baseElement.dataset.item = gameState.currentCreation.base;
+        currentCreationElement.appendChild(baseElement);
+    }
+    
+    // Add flavor if selected
+    if (gameState.currentCreation.flavor) {
+        const flavorElement = document.createElement('div');
+        flavorElement.className = 'creation-item';
+        flavorElement.textContent = gameState.emojiMap[gameState.currentCreation.flavor];
+        flavorElement.dataset.item = gameState.currentCreation.flavor;
+        currentCreationElement.appendChild(flavorElement);
+    }
+    
+    // Add toppings if any
+    gameState.currentCreation.toppings.forEach(topping => {
+        const toppingElement = document.createElement('div');
+        toppingElement.className = 'creation-item';
+        toppingElement.textContent = gameState.emojiMap[topping];
+        toppingElement.dataset.item = topping;
+        currentCreationElement.appendChild(toppingElement);
+    });
+    
+    // Add a "+" between items to show they're being combined
+    const creationItems = currentCreationElement.querySelectorAll('.creation-item');
+    if (creationItems.length > 1) {
+        for (let i = 0; i < creationItems.length - 1; i++) {
+            const plusElement = document.createElement('div');
+            plusElement.className = 'creation-plus';
+            plusElement.textContent = '+';
+            currentCreationElement.insertBefore(plusElement, creationItems[i + 1]);
+        }
+    }
 }
 
 // Reset the current creation
@@ -719,19 +628,14 @@ function resetCreation() {
 
 // Handle serving the creation
 function handleServe() {
-    // Validate game state
     if (!gameState.gameActive) return;
-    if (!gameState.currentOrder || !gameState.currentCreation) {
-        console.error('Invalid game state: missing order or creation');
-        return;
-    }
     
     // Check if creation matches order
     const isCorrect = checkOrder();
     
     if (isCorrect) {
         // Calculate base coins based on level, complexity and difficulty
-        const complexity = gameState.currentOrder.complexity || 1;
+        const complexity = gameState.currentOrder.complexity;
         const difficultyMultiplier = gameState.difficultySettings[gameState.difficulty].coinsMultiplier;
         const baseCoins = Math.round(10 * gameState.level * complexity * difficultyMultiplier);
         
@@ -750,9 +654,6 @@ function handleServe() {
         // Add coins
         gameState.coins += earnedCoins;
         
-        // Save game progress after earning coins
-        saveGame();
-        
         // Get streak message
         const streakMessage = getStreakMessage(gameState.streak - 1, true);
         
@@ -766,7 +667,7 @@ function handleServe() {
         if (streakBonus > 1.0) bonusText += ` 🔥 x${gameState.streak} Streak!`;
         
         coinAnimation.innerHTML = `+${earnedCoins} 🪙<br>${streakMessage}${bonusText}`;
-        DOM.coinsDisplay.appendChild(coinAnimation);
+        document.querySelector('.coins').appendChild(coinAnimation);
         
         // Remove animation after it completes
         setTimeout(() => {
@@ -782,13 +683,13 @@ function handleServe() {
         }
         
         // Add correct animation
-        DOM.currentCreation.classList.add('correct-animation');
+        currentCreationElement.classList.add('correct-animation');
         
         // Show confetti/celebration emoji
         showFeedbackEmoji(true);
         
         setTimeout(() => {
-            DOM.currentCreation.classList.remove('correct-animation');
+            currentCreationElement.classList.remove('correct-animation');
         }, 500);
         
         // Check for level up based on multiple factors
@@ -809,7 +710,7 @@ function handleServe() {
             const streakBroken = document.createElement('div');
             streakBroken.className = 'streak-broken';
             streakBroken.innerHTML = `${failMessage}<br>Streak Broken!`;
-            DOM.coinsDisplay.appendChild(streakBroken);
+            document.querySelector('.coins').appendChild(streakBroken);
             
             // Remove animation after it completes
             setTimeout(() => {
@@ -821,13 +722,13 @@ function handleServe() {
         playSound('wrong');
         
         // Add wrong animation
-        DOM.currentCreation.classList.add('wrong-animation');
+        currentCreationElement.classList.add('wrong-animation');
         
         // Show splat/error emoji
         showFeedbackEmoji(false);
         
         setTimeout(() => {
-            DOM.currentCreation.classList.remove('wrong-animation');
+            currentCreationElement.classList.remove('wrong-animation');
         }, 500);
     }
     
@@ -840,23 +741,12 @@ function checkOrder() {
     const order = gameState.currentOrder;
     const creation = gameState.currentCreation;
     
-    // Validate inputs
-    if (!order || !creation) {
-        console.error('Invalid order or creation');
-        return false;
-    }
-    
     // Check base and flavor
     if (order.base !== creation.base || order.flavor !== creation.flavor) {
         return false;
     }
     
     // Check toppings (order doesn't matter)
-    if (!order.toppings || !creation.toppings) {
-        console.error('Missing toppings array');
-        return false;
-    }
-    
     if (order.toppings.length !== creation.toppings.length) {
         return false;
     }
@@ -876,16 +766,13 @@ function levelUp() {
     gameState.level++;
     
     // Update level display
-    DOM.newLevel.textContent = gameState.level;
+    newLevelElement.textContent = gameState.level;
     
     // Show level up modal
-    DOM.levelUpModal.style.display = 'block';
+    levelUpModal.style.display = 'block';
     
     // Play level up sound
     playSound('levelUp');
-    
-    // Save progress after level up
-    saveGame();
 }
 
 // Open the shop
@@ -907,7 +794,7 @@ function openShop() {
     });
     
     // Show shop modal
-    DOM.shopModal.style.display = 'block';
+    shopModal.style.display = 'block';
 }
 
 // Handle purchase
@@ -935,12 +822,7 @@ function handlePurchase(event) {
             if (ingredient.dataset.item === itemName) {
                 ingredient.classList.remove('locked');
                 // Update the emoji display for unlocked items
-                const emojiElement = ingredient.querySelector('.ingredient-emoji');
-                if (emojiElement.dataset.unlockedEmoji) {
-                    emojiElement.textContent = emojiElement.dataset.unlockedEmoji;
-                } else {
-                    emojiElement.textContent = gameState.emojiMap[itemName];
-                }
+                ingredient.textContent = gameState.emojiMap[itemName];
             }
         });
         
@@ -949,17 +831,12 @@ function handlePurchase(event) {
         
         // Update coins display
         updateUI();
-        
-        // Save progress after purchase
-        saveGame();
-        
-        // Check for level up based on unlocked items
-        checkForLevelUp();
     } else {
         // Not enough coins - shake the coin display
-        DOM.coinsDisplay.classList.add('wrong-animation');
+        const coinsDisplay = document.querySelector('.coins');
+        coinsDisplay.classList.add('wrong-animation');
         setTimeout(() => {
-            DOM.coinsDisplay.classList.remove('wrong-animation');
+            coinsDisplay.classList.remove('wrong-animation');
         }, 500);
         
         // Add not-enough-coins class to shop item
@@ -975,19 +852,20 @@ function handlePurchase(event) {
 
 // Update UI elements
 function updateUI() {
-    DOM.time.textContent = gameState.timer;
-    DOM.coins.textContent = gameState.coins;
-    DOM.level.textContent = gameState.level;
+    timeElement.textContent = gameState.timer;
+    coinsElement.textContent = gameState.coins;
+    levelElement.textContent = gameState.level;
     
     // Update streak indicator
-    if (DOM.streakElement) {
-        DOM.streakCounter.textContent = gameState.streak;
+    const streakElement = document.querySelector('.streak');
+    if (streakElement) {
+        document.getElementById('streak-counter').textContent = gameState.streak;
         
-        // Highlight streak when active using class instead of data attribute
+        // Highlight streak when active
         if (gameState.streak >= 2) {
-            DOM.streakElement.classList.add('active');
+            streakElement.setAttribute('data-active', 'true');
         } else {
-            DOM.streakElement.classList.remove('active');
+            streakElement.removeAttribute('data-active');
         }
     }
 }
@@ -1002,9 +880,7 @@ function showFeedbackEmoji(isCorrect) {
     const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
     
     feedbackContainer.textContent = randomEmoji;
-    
-    // Use the dedicated feedback container
-    DOM.feedbackContainer.appendChild(feedbackContainer);
+    currentCreationElement.appendChild(feedbackContainer);
     
     // Remove after animation completes
     setTimeout(() => {
@@ -1044,7 +920,7 @@ function checkForLevelUp() {
 function changeDifficulty() {
     // Only allow changing difficulty before the game starts or when restarting
     if (!gameState.gameStarted || !gameState.gameActive) {
-        gameState.difficulty = DOM.difficultySelector.value;
+        gameState.difficulty = difficultySelector.value;
         
         // If game has been started but is not active, restart with new difficulty
         if (gameState.gameStarted && !gameState.gameActive) {
@@ -1055,116 +931,30 @@ function changeDifficulty() {
         showToastNotification(`Difficulty set to ${gameState.difficulty.charAt(0).toUpperCase() + gameState.difficulty.slice(1)}!`);
     } else {
         // Reset the selector to current difficulty if trying to change mid-game
-        DOM.difficultySelector.value = gameState.difficulty;
+        difficultySelector.value = gameState.difficulty;
         showToastNotification("Can't change difficulty during gameplay! Finish your game first.");
     }
 }
 
 // Show toast notification
 function showToastNotification(message) {
-    // Create toast element if it doesn't exist yet
-    if (!DOM.toast) {
-        DOM.toast = document.createElement('div');
-        DOM.toast.className = 'toast-notification';
-        document.body.appendChild(DOM.toast);
-    }
-    
-    // Set message
-    DOM.toast.textContent = message;
-    
-    // Remove existing show class if present
-    DOM.toast.classList.remove('show');
-    
-    // Force reflow to ensure transition works
-    void DOM.toast.offsetWidth;
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.textContent = message;
+    document.body.appendChild(toast);
     
     // Animate in
     setTimeout(() => {
-        DOM.toast.classList.add('show');
+        toast.classList.add('show');
     }, 10);
     
     // Remove after animation
     setTimeout(() => {
-        DOM.toast.classList.remove('show');
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove();
+        }, 500);
     }, 3000);
-}
-
-// Save game progress to local storage
-function saveGame() {
-    // Only save if game has been started
-    if (gameState.gameStarted) {
-        const saveData = {
-            coins: gameState.coins,
-            level: gameState.level,
-            unlockedItems: gameState.unlockedItems,
-            difficulty: gameState.difficulty
-        };
-        
-        try {
-            localStorage.setItem('salySoftServe', JSON.stringify(saveData));
-            console.log('Game saved successfully');
-        } catch (error) {
-            console.error('Failed to save game:', error);
-        }
-    }
-}
-
-// Load game progress from local storage
-function loadGame() {
-    try {
-        const savedData = localStorage.getItem('salySoftServe');
-        
-        if (savedData) {
-            const parsedData = JSON.parse(savedData);
-            
-            // Update game state with saved data
-            gameState.coins = parsedData.coins || 0;
-            gameState.level = parsedData.level || 1;
-            gameState.difficulty = parsedData.difficulty || 'easy';
-            
-            // Update unlocked items
-            if (parsedData.unlockedItems) {
-                gameState.unlockedItems = parsedData.unlockedItems;
-                
-                // Update UI for unlocked items
-                document.querySelectorAll('.ingredient').forEach(ingredient => {
-                    const itemName = ingredient.dataset.item;
-                    if (gameState.unlockedItems[itemName]) {
-                        ingredient.classList.remove('locked');
-                        const emojiElement = ingredient.querySelector('.ingredient-emoji');
-                        if (emojiElement.dataset.unlockedEmoji) {
-                            emojiElement.textContent = emojiElement.dataset.unlockedEmoji;
-                        } else {
-                            emojiElement.textContent = gameState.emojiMap[itemName];
-                        }
-                    }
-                });
-            }
-            
-            // Update UI
-            updateUI();
-            
-            // Show toast notification
-            showToastNotification('Game progress loaded!');
-            
-            console.log('Game loaded successfully');
-            return true;
-        }
-    } catch (error) {
-        console.error('Failed to load game:', error);
-    }
-    
-    return false;
-}
-
-// Clear saved game data
-function clearSavedGame() {
-    try {
-        localStorage.removeItem('salySoftServe');
-        console.log('Saved game cleared');
-    } catch (error) {
-        console.error('Failed to clear saved game:', error);
-    }
 }
 
 // Initialize the game when the page loads
