@@ -420,7 +420,10 @@ function resetGameState() {
         if (gameState.flavorItems.unlockable.includes(itemName) || 
             gameState.toppingItems.unlockable.includes(itemName)) {
             item.classList.add('locked');
-            item.textContent = '🔒';
+            const emojiElement = item.querySelector('.ingredient-emoji');
+            if (emojiElement) {
+                emojiElement.textContent = '🔒';
+            }
         }
     });
     
@@ -933,7 +936,11 @@ function handlePurchase(event) {
                 ingredient.classList.remove('locked');
                 // Update the emoji display for unlocked items
                 const emojiElement = ingredient.querySelector('.ingredient-emoji');
-                emojiElement.textContent = gameState.emojiMap[itemName];
+                if (emojiElement.dataset.unlockedEmoji) {
+                    emojiElement.textContent = emojiElement.dataset.unlockedEmoji;
+                } else {
+                    emojiElement.textContent = gameState.emojiMap[itemName];
+                }
             }
         });
         
@@ -1125,7 +1132,11 @@ function loadGame() {
                     if (gameState.unlockedItems[itemName]) {
                         ingredient.classList.remove('locked');
                         const emojiElement = ingredient.querySelector('.ingredient-emoji');
-                        emojiElement.textContent = gameState.emojiMap[itemName];
+                        if (emojiElement.dataset.unlockedEmoji) {
+                            emojiElement.textContent = emojiElement.dataset.unlockedEmoji;
+                        } else {
+                            emojiElement.textContent = gameState.emojiMap[itemName];
+                        }
                     }
                 });
             }
