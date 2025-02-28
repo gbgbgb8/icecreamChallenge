@@ -54,6 +54,54 @@
                 </div>
                 
                 <button id="start-game-button" class="animate__animated animate__pulse animate__infinite">Start Game!</button>
+                <button id="how-to-play-button">How to Play</button>
+                <button id="reset-progress-button">Reset Progress</button>
+            </div>
+        </div>
+        
+        <!-- How to Play Modal -->
+        <div id="how-to-play-modal" class="modal">
+            <div class="modal-content how-to-play-content">
+                <span class="close">&times;</span>
+                <h2>🍦 How to Play 🍦</h2>
+                <div class="how-to-play-steps">
+                    <div class="how-to-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3>Read the Order</h3>
+                            <p>Look at what the customer is asking for in their speech bubble.</p>
+                        </div>
+                    </div>
+                    <div class="how-to-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3>Create the Ice Cream</h3>
+                            <p>Select the base (cone or cup), then the flavor, and finally any toppings requested.</p>
+                        </div>
+                    </div>
+                    <div class="how-to-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3>Serve the Customer</h3>
+                            <p>Click the "Serve!" button when your creation matches the order.</p>
+                        </div>
+                    </div>
+                    <div class="how-to-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h3>Earn Coins & Build Streaks</h3>
+                            <p>Correct orders earn coins. Consecutive correct orders build a streak for bonus coins!</p>
+                        </div>
+                    </div>
+                    <div class="how-to-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h3>Unlock New Items</h3>
+                            <p>Visit the shop to spend coins on new flavors and toppings.</p>
+                        </div>
+                    </div>
+                </div>
+                <button id="close-how-to-play-button">Got it!</button>
             </div>
         </div>
         
@@ -71,28 +119,61 @@
                 <div class="current-creation" id="current-creation">
                     <div class="base-item" id="base-display">👋 Start here!</div>
                 </div>
+                
+                <!-- Feedback container for emojis -->
+                <div id="feedback-container" class="feedback-container"></div>
 
                 <div class="ingredients-section">
                     <div class="section-title">Base</div>
                     <div class="ingredients" id="base-items">
-                        <div class="ingredient" data-item="cone">🍦</div>
-                        <div class="ingredient" data-item="cup">🥤</div>
+                        <div class="ingredient" data-item="cone" aria-label="Cone">
+                            <span class="ingredient-emoji">🍦</span>
+                            <span class="ingredient-label">Cone</span>
+                        </div>
+                        <div class="ingredient" data-item="cup" aria-label="Cup">
+                            <span class="ingredient-emoji">🥤</span>
+                            <span class="ingredient-label">Cup</span>
+                        </div>
                     </div>
 
                     <div class="section-title">Flavors</div>
                     <div class="ingredients" id="flavor-items">
-                        <div class="ingredient" data-item="chocolate">🍫</div>
-                        <div class="ingredient" data-item="strawberry">🍓</div>
-                        <div class="ingredient" data-item="vanilla">🍨</div>
-                        <div class="ingredient locked" data-item="mint" title="Mint Flavor (50 coins)">🔒</div>
+                        <div class="ingredient" data-item="chocolate" aria-label="Chocolate">
+                            <span class="ingredient-emoji">🍫</span>
+                            <span class="ingredient-label">Chocolate</span>
+                        </div>
+                        <div class="ingredient" data-item="strawberry" aria-label="Strawberry">
+                            <span class="ingredient-emoji">🍓</span>
+                            <span class="ingredient-label">Strawberry</span>
+                        </div>
+                        <div class="ingredient" data-item="vanilla" aria-label="Vanilla">
+                            <span class="ingredient-emoji">🍨</span>
+                            <span class="ingredient-label">Vanilla</span>
+                        </div>
+                        <div class="ingredient locked" data-item="mint" title="Mint Flavor (50 coins)" aria-label="Mint - Locked">
+                            <span class="ingredient-emoji">🔒</span>
+                            <span class="ingredient-label">Mint</span>
+                        </div>
                     </div>
 
                     <div class="section-title">Toppings</div>
                     <div class="ingredients" id="topping-items">
-                        <div class="ingredient" data-item="sprinkles">🌈</div>
-                        <div class="ingredient" data-item="chocolate-chips">💩</div>
-                        <div class="ingredient locked" data-item="oreos" title="Oreo Topping (75 coins)">🔒</div>
-                        <div class="ingredient locked" data-item="gummy-worms" title="Gummy Worms (100 coins)">🔒</div>
+                        <div class="ingredient" data-item="sprinkles" aria-label="Sprinkles">
+                            <span class="ingredient-emoji">🌈</span>
+                            <span class="ingredient-label">Sprinkles</span>
+                        </div>
+                        <div class="ingredient" data-item="chocolate-chips" aria-label="Chocolate Chips">
+                            <span class="ingredient-emoji">💩</span>
+                            <span class="ingredient-label">Choc Chips</span>
+                        </div>
+                        <div class="ingredient locked" data-item="oreos" title="Oreo Topping (75 coins)" aria-label="Oreos - Locked">
+                            <span class="ingredient-emoji">🔒</span>
+                            <span class="ingredient-label">Oreos</span>
+                        </div>
+                        <div class="ingredient locked" data-item="gummy-worms" title="Gummy Worms (100 coins)" aria-label="Gummy Worms - Locked">
+                            <span class="ingredient-emoji">🔒</span>
+                            <span class="ingredient-label">Gummy Worms</span>
+                        </div>
                     </div>
                 </div>
             </div>
